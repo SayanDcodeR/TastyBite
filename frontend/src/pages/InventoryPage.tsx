@@ -8,6 +8,7 @@ const InventoryPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [formData, setFormData] = useState({
     name: "",
@@ -168,7 +169,7 @@ const InventoryPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Constraints wrapper for lower half */}
+          
       <div className="flex flex-col gap-6">
         {/* Search & Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between relative z-10">
@@ -177,6 +178,8 @@ const InventoryPage: React.FC = () => {
             <input
               type="text"
               placeholder="Search inventory..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-transparent border-none outline-none text-sm"
             />
           </div>
@@ -235,7 +238,11 @@ const InventoryPage: React.FC = () => {
               </thead>
               <tbody className="text-sm font-medium text-gray-900">
                 {items
-                  .filter(item => selectedCategory === "All" || item.category === selectedCategory)
+                  .filter(item => {
+                    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
+                    const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+                    return matchesCategory && matchesSearch;
+                  })
                   .map((item, idx) => (
                   <tr 
                     key={item.id} 

@@ -4,6 +4,7 @@ export interface NavItem {
   icon: string;
   href: string;
   badge?: number;
+  roles?: string[]; // ✅ already perfect
 }
 
 export interface StatCard {

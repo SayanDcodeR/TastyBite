@@ -10,15 +10,23 @@ import type {
 } from "../types";
 
 export const navItems: NavItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "dashboard", href: "/" },
-  { id: "menu", label: "Menu", icon: "menu", href: "/menu" },
-  { id: "tables", label: "Tables", icon: "tables", href: "/tables" },
-  { id: "create-order", label: "Create Order", icon: "order", href: "/create-order" },
-  { id: "kitchen", label: "Kitchen", icon: "kitchen", href: "/kitchen" },
-  { id: "billing", label: "Billing", icon: "billing", href: "/billing" },
-  { id: "inventory", label: "Inventory", icon: "inventory", href: "/inventory" },
-  { id: "employees", label: "Employees", icon: "employees", href: "/employees" },
-  { id: "order-history", label: "Order History", icon: "history", href: "/order-history" },
+  { id: "dashboard", label: "Dashboard", icon: "dashboard", href: "/", roles: ["admin"] },
+
+  { id: "menu", label: "Menu", icon: "menu", href: "/menu", roles: ["admin"] },
+
+  { id: "tables", label: "Tables", icon: "tables", href: "/tables", roles: ["admin", "waiter"] },
+
+  { id: "create-order", label: "Create Order", icon: "order", href: "/create-order", roles: ["waiter"] },
+
+  { id: "kitchen", label: "Kitchen", icon: "kitchen", href: "/kitchen", roles: ["admin", "waiter", "chef"] },
+
+  { id: "billing", label: "Billing", icon: "billing", href: "/billing", roles: ["admin"] },
+
+  { id: "inventory", label: "Inventory", icon: "inventory", href: "/inventory", roles: ["admin", "chef"] },
+
+  { id: "employees", label: "Employees", icon: "employees", href: "/employees", roles: ["admin"] },
+
+  { id: "order-history", label: "Order History", icon: "history", href: "/order-history", roles: ["admin"] },
 ];
 
 export const statCards: StatCard[] = [

@@ -14,6 +14,7 @@ import {
 import { LuChefHat } from "react-icons/lu";
 import type { SidebarProps, NavItem } from "../../types";
 import { navItems } from "../../data/dashboardData";
+import { useUser } from "@clerk/clerk-react";
 
 const iconMap: Record<string, React.ReactElement> = {
   dashboard: <MdDashboard size={20} />,
@@ -37,11 +38,10 @@ const NavLink: React.FC<NavLinkProps> = ({ item, isActive, onClick }) => (
   <li>
     <button
       onClick={onClick}
-      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${
-        isActive
-          ? "bg-orange-500 text-white shadow-md shadow-orange-200"
-          : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
-      }`}
+      className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 cursor-pointer ${isActive
+        ? "bg-orange-500 text-white shadow-md shadow-orange-200"
+        : "text-gray-600 hover:bg-orange-50 hover:text-orange-600"
+        }`}
     >
       <span className={isActive ? "text-white" : "text-gray-400"}>
         {iconMap[item.icon]}
@@ -57,6 +57,11 @@ const Sidebar: React.FC<SidebarProps & { activePage: string; onNavigate: (id: st
   activePage,
   onNavigate,
 }) => {
+  const { user, isLoaded } = useUser();
+
+  if (!isLoaded) return null;
+
+  const role = user?.publicMetadata?.role as string;
   return (
     <>
       {/* Mobile Overlay */}
@@ -98,21 +103,23 @@ const Sidebar: React.FC<SidebarProps & { activePage: string; onNavigate: (id: st
         {/* Nav */}
         <nav className="flex-1 px-3 py-5 overflow-y-auto">
           <ul className="space-y-1">
-            {navItems.map((item) => (
-              <NavLink
-                key={item.id}
-                item={item}
-                isActive={activePage === item.id}
-                onClick={() => {
-                  onNavigate(item.id);
-                  onClose();
-                }}
-              />
-            ))}
+            {navItems
+              .filter((item) => item.roles?.includes(role))
+              .map((item) => (
+                <NavLink
+                  key={item.id}
+                  item={item}
+                  isActive={activePage === item.id}
+                  onClick={() => {
+                    onNavigate(item.id);
+                    onClose();
+                  }}
+                />
+              ))}
           </ul>
         </nav>
 
-        
+
       </aside>
     </>
   );

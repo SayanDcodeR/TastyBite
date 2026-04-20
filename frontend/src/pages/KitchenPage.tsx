@@ -2,9 +2,15 @@ import React from "react";
 import { MdAccessTime, MdCheckCircle, MdErrorOutline } from "react-icons/md";
 import { useAppContext } from "../context/AppContext";
 import { api } from "../utils/api";
+import { useUser } from "@clerk/clerk-react";
 
 const KitchenPage: React.FC = () => {
   const { kitchenOrders, refreshData } = useAppContext();
+  const { user, isLoaded } = useUser();
+
+  if (!isLoaded) return null;
+
+  const role = user?.publicMetadata?.role as string;
 
   const handleStatusToggle = async (id: string, currentStatus: string) => {
     const newStatus = currentStatus === "Ready" ? "Preparing" : "Ready";
@@ -18,7 +24,7 @@ const KitchenPage: React.FC = () => {
   return (
     <div className="p-5 lg:p-8 space-y-6 overflow-y-auto">
       {/* Stats Header */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-2xl border border-gray-100 flex justify-between items-center shadow-sm">
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Preparing</p>
@@ -41,7 +47,7 @@ const KitchenPage: React.FC = () => {
             <MdCheckCircle size={24} />
           </div>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 flex justify-between items-center shadow-sm">
+        {/* <div className="bg-white p-6 rounded-2xl border border-gray-100 flex justify-between items-center shadow-sm">
           <div>
             <p className="text-gray-500 text-sm font-medium mb-1">Delayed</p>
             <p className="text-3xl font-bold text-red-600">
@@ -51,7 +57,7 @@ const KitchenPage: React.FC = () => {
           <div className="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500">
             <MdErrorOutline size={24} />
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Orders Grid */}
@@ -91,22 +97,7 @@ const KitchenPage: React.FC = () => {
                 </span>
               </div>
 
-              {order.status === "Delayed" && (
-                <div className="flex justify-between items-center bg-red-50 text-red-700 px-4 py-2.5 rounded-xl mb-6">
-                  <div className="flex items-center gap-2 font-medium text-sm">
-                    <MdAccessTime size={18} /> {order.waitTime}
-                  </div>
-                  <span className="px-2 py-0.5 bg-red-600 text-white rounded-full text-[10px] font-bold">Delayed</span>
-                </div>
-              )}
-              {order.status !== "Delayed" && (
-                <div className="flex justify-between items-center bg-gray-50 text-gray-600 px-4 py-2.5 rounded-xl mb-6">
-                  <div className="flex items-center gap-2 font-medium text-sm">
-                    <MdAccessTime size={18} /> {order.waitTime}
-                  </div>
-                </div>
-              )}
-
+              
               <div className="flex-1 space-y-4 mb-6">
                 {(order.itemsDetail || []).map((item: any, idx: number) => (
                   <div key={idx} className="flex flex-col">
@@ -124,13 +115,15 @@ const KitchenPage: React.FC = () => {
                 ))}
               </div>
 
-              <button 
-                onClick={() => handleStatusToggle(order.id, order.status)}
-                className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors duration-200 mt-auto ${actionColor}`}
-              >
-                {order.status !== "Ready" && <MdCheckCircle size={20} />}
-                {actionLabel}
-              </button>
+              {role === "chef" && (
+                <button
+                  onClick={() => handleStatusToggle(order.id, order.status)}
+                  className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 ${actionColor}`}
+                >
+                  {order.status !== "Ready" && <MdCheckCircle size={20} />}
+                  {actionLabel}
+                </button>
+              )}
             </div>
           );
         })}
